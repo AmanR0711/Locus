@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 
+import '../../models/locus_user.dart';
 import '../../screens/profile_screen.dart';
 
 class ViewFollowCard extends StatelessWidget {
-  final String val;
+  final LocusUser user;
 
-  const ViewFollowCard(this.val, {super.key});
+  const ViewFollowCard(this.user, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: const CircleAvatar(
-          backgroundImage: NetworkImage("https://picsum.photos/200"),
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(user.avatarUrl),
         ),
-        title: Text(val),
+        title: Text(user.name),
+        subtitle: Text(user.username),
         trailing: IconButton(
           icon: const Icon(Icons.arrow_forward_ios_rounded),
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (c) => ProfileScreen(),
+              builder: (c) => ProfileScreen(user),
             ),
           ),
         ),

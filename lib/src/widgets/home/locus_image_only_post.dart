@@ -7,6 +7,7 @@ class LocusImageOnlyPost extends LocusPost {
 
   LocusImageOnlyPost({
     super.key,
+    required super.moment,
     required BuildContext context,
     required this.url,
   }) : super(

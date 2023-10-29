@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../screens/view_follow_screen.dart';
+import '../../models/locus_user.dart';
+// import '../../screens/view_follow_screen.dart';
 import 'display_number_button.dart';
 
 class ProfileDetails extends StatelessWidget {
-  const ProfileDetails({super.key});
+  final LocusUser user;
+  const ProfileDetails(this.user, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,56 +25,47 @@ class ProfileDetails extends StatelessWidget {
                 child: CircleAvatar(
                   backgroundColor: Colors.grey.shade300,
                   radius: 64,
-                  child: const CircleAvatar(
+                  child: CircleAvatar(
                     backgroundImage: NetworkImage(
-                      "https://picsum.photos/200?blur=1",
+                      user.avatarUrl,
                     ),
                     radius: 60,
                   ),
                 ),
               ),
               Text(
-                "Aman R",
+                user.name.isEmpty ? "A Locus User" : user.name,
                 style: Theme.of(context)
                     .textTheme
                     .headlineSmall!
                     .copyWith(color: Colors.grey.shade50),
               ),
               Text(
-                "I am a Locus User",
+                user.bioData.isEmpty ? "I am a Locus User" : user.bioData,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Colors.grey.shade50,
                       fontWeight: FontWeight.w100,
                     ),
               ),
               const SizedBox(height: 8),
+              // TODO:
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   const DisplayNumberButton(
-                    0,
+                    0, 
                     "Moments",
                     onTap: null,
                   ),
                   DisplayNumberButton(
                     225,
                     "Followers",
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (c) => const ViewFollowScreen("View Followers"),
-                      ),
-                    ),
+                    onTap: () {},
                   ),
                   DisplayNumberButton(
                     250,
                     "Following",
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (c) => const ViewFollowScreen("View Following"),
-                      ),
-                    ),
+                    onTap: () {},
                   ),
                 ],
               ),

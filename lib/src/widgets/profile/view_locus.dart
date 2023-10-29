@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../home/locus_image_only_post.dart';
+import '../../models/moment.dart';
 import '../home/locus_image_with_caption_post.dart';
 import '../home/locus_text_only_post.dart';
 
 class ViewLocusScreen extends StatefulWidget {
-  const ViewLocusScreen({super.key});
+  final List<Moment> moments;
+  const ViewLocusScreen(this.moments, {super.key});
 
   @override
   State<ViewLocusScreen> createState() => _ViewLocusScreenState();
@@ -14,32 +16,23 @@ class ViewLocusScreen extends StatefulWidget {
 class _ViewLocusScreenState extends State<ViewLocusScreen> {
   @override
   Widget build(BuildContext context) {
-    final moments = [
-      ...List.generate(
-        5,
-        (i) => LocusImageOnlyPost(
-          context: context,
-          url: "https://picsum.photos/id/${10 * i}/300/",
+    var fromDateTime = DateTime.now().subtract(const Duration(days: 1));
+    var toDateTime = DateTime.now();
+    final markers = <Marker>{};
+    for (var m in widget.moments) {
+      markers.add(
+        Marker(
+          markerId: MarkerId(m.momentId),
+          draggable: false,
+          infoWindow: InfoWindow(
+            title: m.title,
+            snippet: m.content.content,
+          ),
+          position: LatLng(m.location.latitude, m.location.longitude),
+          visible: true,
         ),
-      ),
-      ...List.generate(
-        5,
-        (i) => LocusTextOnlyPost(
-          context: context,
-          text:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur placerat est id nisi volutpat pulvinar. Nulla facilisi. Integer facilisis, dolor non tempus dictum, magna dui maximus tortor, ut pharetra tellus dui at odio. Donec lacus odio, dapibus id velit nec, scelerisque commodo enim. Proin pharetra, lacus nec lobortis tincidunt, lorem neque venenatis nulla, vel volutpat arcu dolor nec magna. Donec sollicitudin efficitur massa. Pellentesque nec ligula eu urna luctus mattis. Nulla non nisi arcu. Sed rutrum turpis id mauris faucibus, vel ornare ante congue. Sed elit magna, maximus vitae consequat vitae, vestibulum sit amet sapien.",
-        ),
-      ),
-      ...List.generate(
-        5,
-        (i) => LocusImageWithCaptionPost(
-          context: context,
-          url: "https://picsum.photos/id/${10 * i}/300/",
-          caption:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur placerat est id nisi volutpat pulvinar. Nulla facilisi.",
-        ),
-      ),
-    ];
+      );
+    }
     return Scaffold(
       body: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
@@ -59,29 +52,57 @@ class _ViewLocusScreenState extends State<ViewLocusScreen> {
               ),
             ),
             ListTile(
-              onTap: () => showDateRangePicker(
-                useRootNavigator: true,
-                context: context,
-                firstDate: DateTime.now().subtract(const Duration(days: 5)),
-                lastDate: DateTime.now(),
-              ),
-              leading: const Text("Yesterday"),
-              trailing: const Text("Today"),
+              onTap: () async {
+                final range = await showDateRangePicker(
+                  useRootNavigator: true,
+                  context: context,
+                  firstDate: fromDateTime,
+                  lastDate: toDateTime,
+                );
+                if (range != null) {
+                  setState(() {
+                    fromDateTime = range.start;
+                    toDateTime = range.end;
+                  });
+                }
+              },
+              leading: Text(fromDateTime.toIso8601String().substring(0, 9)),
+              trailing: Text(toDateTime.toIso8601String().substring(0, 9)),
               title: const Text(
                 textAlign: TextAlign.center,
                 "to",
               ),
               titleAlignment: ListTileTitleAlignment.center,
             ),
-            const Placeholder(),
+            SizedBox(
+              height: 400,
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: markers.last.position,
+                ),
+                markers: markers,
+              ),
+            ),
             SizedBox(
               width: double.infinity,
               height: MediaQuery.of(context).size.height * 0.4,
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: moments.length,
-                // scrollDirection: Axis.horizontal,
-                itemBuilder: (c, i) => moments[i],
+                itemCount: widget.moments.length,
+                itemBuilder: (c, i) {
+                  final m = widget.moments[i];
+                  if (m.content.url == null) {
+                    return LocusTextOnlyPost(
+                      context: c,
+                      moment: m,
+                    );
+                  } else {
+                    return LocusImageWithCaptionPost(
+                      context: c,
+                      moment: m,
+                    );
+                  }
+                },
               ),
             ),
           ],
@@ -89,26 +110,4 @@ class _ViewLocusScreenState extends State<ViewLocusScreen> {
       ),
     );
   }
-}
-
-class ViewLocusDelegate extends SliverPersistentHeaderDelegate {
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    // TODO: Add Map
-    return const Placeholder();
-  }
-
-  @override
-  double get maxExtent => 500;
-
-  @override
-  double get minExtent => 250;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      this != oldDelegate;
 }

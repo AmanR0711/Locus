@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../widgets/home/locus_image_only_post.dart';
-import '../widgets/home/locus_image_with_caption_post.dart';
-import '../widgets/home/locus_text_only_post.dart';
+import '../models/locus_user.dart';
 import '../widgets/profile/profile_details.dart';
 import '../widgets/profile/profile_options_sliver_delegate.dart';
 import '../widgets/profile/view_locus.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final LocusUser user;
+  const ProfileScreen(this.user, {super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -37,62 +37,39 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final moments = [
-      ...List.generate(
-        5,
-        (i) => LocusImageOnlyPost(
-          context: context,
-          url: "https://picsum.photos/id/${10 * i}/300/",
-        ),
-      ),
-      ...List.generate(
-        5,
-        (i) => LocusTextOnlyPost(
-          context: context,
-          text:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur placerat est id nisi volutpat pulvinar. Nulla facilisi. Integer facilisis, dolor non tempus dictum, magna dui maximus tortor, ut pharetra tellus dui at odio. Donec lacus odio, dapibus id velit nec, scelerisque commodo enim. Proin pharetra, lacus nec lobortis tincidunt, lorem neque venenatis nulla, vel volutpat arcu dolor nec magna. Donec sollicitudin efficitur massa. Pellentesque nec ligula eu urna luctus mattis. Nulla non nisi arcu. Sed rutrum turpis id mauris faucibus, vel ornare ante congue. Sed elit magna, maximus vitae consequat vitae, vestibulum sit amet sapien.",
-        ),
-      ),
-      ...List.generate(
-        5,
-        (i) => LocusImageWithCaptionPost(
-          context: context,
-          url: "https://picsum.photos/id/${10 * i}/300/",
-          caption:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur placerat est id nisi volutpat pulvinar. Nulla facilisi.",
-        ),
-      ),
-    ];
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text("View aman_r"),
+        title: Text("View ${widget.user.username}"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: CustomScrollView(
-        slivers: [
-          const SliverToBoxAdapter(child: ProfileDetails()),
-          SliverPersistentHeader(
-            floating: true,
-            pinned: true,
-            delegate: ProfileOptionsSliverDelegate(tabController),
-          ),
-          SliverFillRemaining(
-            child: TabBarView(
-              controller: tabController,
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const ClampingScrollPhysics(),
-                  itemBuilder: (c, i) => moments[i],
-                  itemCount: moments.length,
+      body: BlocBuilder<MomentsBloc, MomentsState>(
+        builder: (c, s) {
+          return CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: ProfileDetails(widget.user)),
+              SliverPersistentHeader(
+                floating: true,
+                pinned: true,
+                delegate: ProfileOptionsSliverDelegate(tabController),
+              ),
+              SliverFillRemaining(
+                child: TabBarView(
+                  controller: tabController,
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const ClampingScrollPhysics(),
+                      itemBuilder: (c, i) => moments[i],
+                      itemCount: moments.length,
+                    ),
+                    // TODO: Map View
+                    ViewLocusScreen(),
+                  ],
                 ),
-                // TODO: Map View
-                const ViewLocusScreen(),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        }
       ),
     );
   }

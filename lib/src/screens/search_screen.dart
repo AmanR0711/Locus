@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/search/search_location.dart';
-import '../widgets/search/search_user_tile.dart';
-
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -21,8 +18,6 @@ class _SearchScreenState extends State<SearchScreen>
   @override
   void initState() {
     super.initState();
-    items1 = List<Widget>.generate(10, (i) => const SearchUserTile());
-    items2 = List<Widget>.generate(5, (i) => const SearchLocationTile());
     usernameVal = false;
     nameVal = false;
     locationVal = false;
@@ -43,11 +38,6 @@ class _SearchScreenState extends State<SearchScreen>
         child: AppBar(
           title: const Text("Search"),
           backgroundColor: Theme.of(context).primaryColor,
-          // shape: const RoundedRectangleBorder(
-          //   borderRadius: BorderRadius.horizontal(
-          //     right: Radius.circular(15),
-          //   ),
-          // ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight * 1.2),
             child: Padding(
@@ -135,75 +125,6 @@ class LocusSearchDelegate extends SearchDelegate {
           onPressed: () => query = "",
           icon: const Icon(Icons.close),
         ),
-        IconButton(
-          icon: const Icon(Icons.tune_rounded),
-          onPressed: () => showModalBottomSheet(
-            context: context,
-            builder: (c) => SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                vertical: 12.0,
-                horizontal: 8.0,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16.0),
-                  Text(
-                    "Filter By:",
-                    style: Theme.of(c).textTheme.titleLarge!.apply(
-                          color: Colors.grey.shade50,
-                        ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      children: [
-                        CheckboxMenuButton(
-                          value: false,
-                          onChanged: (v) {}, //setState(() => usernameVal = v!),
-                          child: const Text("User"),
-                        ),
-                        CheckboxMenuButton(
-                          value: false,
-                          onChanged: (v) {}, //setState(() => locationVal = v!),
-                          child: const Text("Location"),
-                        ),
-                        const SizedBox(height: 16.0),
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.filter_list_rounded),
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.resolveWith(
-                              (_) => RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            foregroundColor: MaterialStateColor.resolveWith(
-                              (_) => Colors.grey.shade50,
-                            ),
-                            backgroundColor: MaterialStateColor.resolveWith(
-                              (_) => Theme.of(c).colorScheme.secondary,
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(c);
-                          },
-                          label: Text(
-                            "Filter",
-                            style: TextStyle(
-                              color: Colors.grey.shade50,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
       ];
 
   @override
@@ -239,7 +160,11 @@ class LocusSearchDelegate extends SearchDelegate {
 
   @override
   Widget? buildLeading(BuildContext context) => IconButton(
-        onPressed: () => close(context, query.trim().isEmpty ? null : query),// Navigator.pop(context, query.trim().isEmpty ? null : query),
+        onPressed: () => close(
+            context,
+            query.trim().isEmpty
+                ? null
+                : query), // Navigator.pop(context, query.trim().isEmpty ? null : query),
         icon: const Icon(Icons.arrow_back_outlined),
       );
 

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../models/moment.dart';
 import '../../screens/moment_screen.dart';
 
 abstract class LocusPost extends StatelessWidget {
+  final Moment moment;
   final List<Widget> children;
 
-  const LocusPost({super.key, required this.children});
+  const LocusPost({
+    super.key,
+    required this.moment,
+    required this.children,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +27,13 @@ abstract class LocusPost extends StatelessWidget {
               children: [
                 CircleAvatar(
                   backgroundImage: Image.network(
-                    "https://picsum.photos/200?blur=2",
+                    moment.creator.avatarUrl,
                   ).image,
                   radius: 18,
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  "User posted:",
+                  "${moment.creator.username} posted:",
                   style: TextStyle(
                     color: Colors.grey.shade50,
                     fontWeight: FontWeight.bold,
@@ -53,13 +59,13 @@ abstract class LocusPost extends StatelessWidget {
             ListTile(
               dense: true,
               leading: const Icon(Icons.crisis_alert_outlined),
-              title: const Text("Location "),
+              title: Text(moment.location.place),
               trailing: IconButton(
                 icon: const Icon(Icons.exit_to_app_rounded),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (c) => const MomentScreen(),
+                    builder: (c) => MomentScreen(moment),
                   ),
                 ),
               ),

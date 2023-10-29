@@ -19,8 +19,11 @@ class LocusUser {
   /// A supporting body of text in which the User can give more information about their account
   final String bioData;
 
+  /// URL to the User's avatar
+  final String avatarUrl;
+
   // Constructor
-  LocusUser(this.username, this.emailAddress, this.name, this.bioData);
+  LocusUser(this.username, this.emailAddress, this.name, this.bioData) : avatarUrl = "";
 
   /// Converts a LocusUser to JSON
   Map<String, dynamic> toJson() => _$LocusUserToJson(this);

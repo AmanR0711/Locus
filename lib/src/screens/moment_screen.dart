@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../controllers/moment/moment.dart';
+import '../models/moment.dart';
 import '../widgets/moment/comment_modal.dart';
-import '../widgets/util/text_only_post_content.dart';
+import '../widgets/moment/locus_post_content.dart';
 
 class MomentScreen extends StatefulWidget {
-  const MomentScreen({super.key});
+  final Moment moment;
+  const MomentScreen(this.moment, {super.key});
 
   @override
   State<MomentScreen> createState() => _MomentScreenState();
@@ -13,6 +18,7 @@ class MomentScreen extends StatefulWidget {
 class _MomentScreenState extends State<MomentScreen> {
   @override
   Widget build(BuildContext context) {
+    final momentBloc = MomentBloc(context.read(), widget.moment.momentId);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Moment"),
@@ -34,13 +40,13 @@ class _MomentScreenState extends State<MomentScreen> {
                         ),
                       ),
                     ),
-                    child: const ListTile(
+                    child: ListTile(
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(
-                          "https://picsum.photos/400",
+                          widget.moment.creator.avatarUrl,
                         ),
                       ),
-                      title: Text("aman_r posted"),
+                      title: Text("${widget.moment.creator.username} posted"),
                     ),
                   ),
                   Container(
@@ -52,20 +58,23 @@ class _MomentScreenState extends State<MomentScreen> {
                         ),
                       ),
                     ),
-                    child: TextOnlyPostContent(
-                      "texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext",
-                    ),
+                    child: LocusPostContent(widget.moment.content),
                   ),
                   Container(
                     decoration: BoxDecoration(
                       border: Border(
-                        bottom:
-                            BorderSide(width: 1, color: Colors.grey.shade50),
+                        bottom: BorderSide(
+                          width: 1,
+                          color: Colors.grey.shade50,
+                        ),
                       ),
                     ),
                     child: ListTile(
-                      leading: Icon(Icons.person_pin),
-                      title: Text("Juhu Beach, Mumbai"),
+                      leading: const Icon(Icons.person_pin),
+                      title: Text(
+                        widget.moment.location.place,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                   ListTile(
@@ -73,17 +82,30 @@ class _MomentScreenState extends State<MomentScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.thumb_up_alt_outlined),
-                          onPressed: () {},
-                        ),
+                        BlocBuilder<MomentBloc, MomentState>(
+                            bloc: momentBloc,
+                            builder: (c, s) {
+                              return IconButton(
+                                icon: Icon(
+                                  s is LikedMomentState
+                                      ? Icons.thumb_up
+                                      : Icons.thumb_up_alt_outlined,
+                                ),
+                                onPressed: () => momentBloc.add(
+                                  ToggleLikeMomentEvent(
+                                    widget.moment.momentId,
+                                    widget.moment.creator.username,
+                                  ),
+                                ),
+                              );
+                            }),
                         IconButton(
                           icon: const Icon(Icons.forum_outlined),
                           onPressed: () => showModalBottomSheet(
                             context: context,
                             builder: (c) => Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: const CommentModal(),
+                              child: CommentModal(widget.moment.comments),
                             ),
                           ),
                         ),
@@ -95,7 +117,27 @@ class _MomentScreenState extends State<MomentScreen> {
             ),
           ),
           // Google Map
-          Placeholder(),
+          SizedBox(
+            height: 400,
+            child: GoogleMap(
+              zoomGesturesEnabled: true,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(
+                  widget.moment.location.latitude,
+                  widget.moment.location.longitude,
+                ),
+              ),
+              markers: {
+                Marker(
+                  markerId: MarkerId(widget.moment.momentId),
+                  position: LatLng(
+                    widget.moment.location.latitude,
+                    widget.moment.location.longitude,
+                  ),
+                ),
+              },
+            ),
+          ),
         ],
       ),
     );

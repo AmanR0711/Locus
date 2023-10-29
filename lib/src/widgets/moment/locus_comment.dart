@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../models/comment.dart';
+
 class LocusComment extends StatelessWidget {
-  final String comment;
+  final Comment comment;
 
   const LocusComment(this.comment, {super.key});
 
@@ -23,7 +25,7 @@ class LocusComment extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage("https://picsum.photos/400"),
+              backgroundImage: NetworkImage(comment.user.avatarUrl),
             ),
             const SizedBox(width: 16),
             Column(
@@ -32,14 +34,14 @@ class LocusComment extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "aman_r",
+                  comment.user.username,
                   style: TextStyle(color: Colors.grey.shade50),
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.65,
                   child: Flexible(
                     child: Text(
-                      comment,
+                      comment.comment,
                       softWrap: true,
                       style: TextStyle(color: Colors.grey.shade50),
                     ),

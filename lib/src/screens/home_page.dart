@@ -5,10 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../controllers/auth/auth_cubit.dart';
 import '../models/locus_user.dart';
-import '../widgets/home/locus_image_only_post.dart';
-import '../widgets/home/locus_image_with_caption_post.dart';
 import '../widgets/home/locus_post.dart';
-import '../widgets/home/locus_text_only_post.dart';
 import 'add_moment_screen.dart';
 import 'onboarding_screen.dart';
 import 'profile_screen.dart';
@@ -29,32 +26,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final authCubit = AuthCubit(context.read(), context.read());
-    posts = [
-      ...List.generate(
-        5,
-        (i) => LocusImageOnlyPost(
-          context: context,
-          url: "https://picsum.photos/id/${10 * i}/300/",
-        ),
-      ),
-      ...List.generate(
-        5,
-        (i) => LocusTextOnlyPost(
-          context: context,
-          text:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur placerat est id nisi volutpat pulvinar. Nulla facilisi. Integer facilisis, dolor non tempus dictum, magna dui maximus tortor, ut pharetra tellus dui at odio. Donec lacus odio, dapibus id velit nec, scelerisque commodo enim. Proin pharetra, lacus nec lobortis tincidunt, lorem neque venenatis nulla, vel volutpat arcu dolor nec magna. Donec sollicitudin efficitur massa. Pellentesque nec ligula eu urna luctus mattis. Nulla non nisi arcu. Sed rutrum turpis id mauris faucibus, vel ornare ante congue. Sed elit magna, maximus vitae consequat vitae, vestibulum sit amet sapien.",
-        ),
-      ),
-      ...List.generate(
-        5,
-        (i) => LocusImageWithCaptionPost(
-          context: context,
-          url: "https://picsum.photos/id/${10 * i}/300/",
-          caption:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur placerat est id nisi volutpat pulvinar. Nulla facilisi.",
-        ),
-      ),
-    ];
 
     final query = ModalRoute.of(context) != null
         ? (ModalRoute.of(context)!.settings.arguments != null

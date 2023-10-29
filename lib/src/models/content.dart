@@ -1,27 +1,18 @@
-/// Base [Content] class
-/// 
-/// Every specialised type of content must extend from this base class
-abstract class Content {}
+import 'package:json_annotation/json_annotation.dart';
 
-/// Plain text content
-/// 
-/// The default content for any [Moment]
-class PlainTextContent extends Content {
+part 'content.g.dart';
+
+@JsonSerializable()
+class Content {
   /// The plain text content
   final String content;
 
-  PlainTextContent(this.content);
-}
+  /// An optional image url
+  final String? url;
 
-/// Image with optional caption content
-/// 
-/// Contains an image with an optional caption for any [Moment]
-class ImageCaptionContent extends Content {
-  /// The URL of the [Moment]'s image
-  final String imageUrl;
+  Content(this.content, this.url);
 
-  /// An optional caption
-  final String caption;
+  factory Content.fromJson(Map<String, dynamic> json) => _$ContentFromJson(json);
 
-  ImageCaptionContent({required this.imageUrl, this.caption = ""});
+  Map<String, dynamic> toJson() => _$ContentToJson(this);
 }

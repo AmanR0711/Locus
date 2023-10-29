@@ -4,11 +4,9 @@ import '../util/text_only_post_content.dart';
 import 'locus_post.dart';
 
 class LocusTextOnlyPost extends LocusPost {
-  final String text;
-
   LocusTextOnlyPost({
     super.key,
     required BuildContext context,
-    required this.text,
-  }) : super(children: [TextOnlyPostContent(text)]);
+    required super.moment,
+  }) : super(children: [TextOnlyPostContent(moment.content.content)]);
 }

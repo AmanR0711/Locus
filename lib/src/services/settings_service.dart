@@ -21,7 +21,7 @@ class SettingsServiceImpl implements SettingsService {
 
   @override
   Future<LocusUser> updateBiodata(String email, String biodata) async {
-    await client.collection(USERS_COLLECTION).doc(email).set({
+    await client.collection(USERS_COLLECTION).doc(email).update({
       'biodata': biodata,
     });
     return getSettings(email);
@@ -29,7 +29,7 @@ class SettingsServiceImpl implements SettingsService {
 
   @override
   Future<LocusUser> updateName(String email, String name) async {
-    await client.collection(USERS_COLLECTION).doc(email).set({
+    await client.collection(USERS_COLLECTION).doc(email).update({
       'name': name,
     });
     return getSettings(email);
@@ -37,7 +37,7 @@ class SettingsServiceImpl implements SettingsService {
 
   @override
   Future<LocusUser> updateUsername(String email, String username) async {
-    await client.collection(USERS_COLLECTION).doc(email).set({
+    await client.collection(USERS_COLLECTION).doc(email).update({
       'username': username,
     });
     return getSettings(email);
